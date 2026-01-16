@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Sky Theme Variables */
+  --sky-bg-start: #4facfe;
+  --sky-bg-end: #00f2fe;
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+
+  /* Grok Docs Theme Variables */
+  --docs-bg: #000000;
+  --docs-sidebar: #0a0a0a;
+  --docs-border: #222;
+  --docs-text: #e5e5e5;
+  --docs-accent: #ffffff;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Sky Theme Utilities */
+.bg-sky-gradient {
+  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+  /* More vibrant alternative if needed: linear-gradient(to right, #4facfe 0%, #00f2fe 100%) */
+}
+
+.floating-card {
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+  /* Soft, large shadow */
+  border-radius: 30px;
+  /* More rounded */
+}
+
+.floating-element {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Grok Docs Utilities */
+.docs-wrapper {
+  background-color: var(--docs-bg);
+  color: var(--docs-text);
+  font-family: 'Inter', sans-serif;
+}
+
+.docs-card {
+  background: linear-gradient(180deg, #111 0%, #0a0a0a 100%);
+  border: 1px solid var(--docs-border);
+  transition: all 0.2s;
+}
+
+.docs-card:hover {
+  border-color: #444;
+  transform: translateY(-2px);
+}
+
+.mono-font {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}

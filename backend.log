@@ -1,0 +1,431 @@
+/Users/yongwoo.kim/Library/Python/3.12/lib/python/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+  warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+/Users/yongwoo.kim/Downloads/test111/backend/main.py:64: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("startup")
+INFO:     Started server process [30600]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:53362 - "GET /docs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53364 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53948 - "OPTIONS /api/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53948 - "POST /api/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53948 - "OPTIONS /api/analyze/2f0e2123-b4e9-4950-a3ec-9ed40c2b2716 HTTP/1.1" 200 OK
+🎵 Loading audio: temp_uploads/2f0e2123-b4e9-4950-a3ec-9ed40c2b2716.mp3
+✓ Loaded 214.46 seconds at 44100 Hz
+
+============================================================
+🎧 Full Audio Analysis: temp_uploads/2f0e2123-b4e9-4950-a3ec-9ed40c2b2716.mp3
+============================================================
+
+🎼 Analyzing tempo and beats...
+✓ BPM: 126.05, Beats: 440, Downbeats: 110
+🎹 Analyzing key and scale...
+✓ Key: A# major, Camelot: Unknown
+⚡ Analyzing energy levels...
+✓ Avg Energy: 0.429, Peak: 1.000
+📊 Detecting song segments...
+✓ Segments detected:
+  - Intro: 0.0s - 30.0s
+  - Buildup: 0.0s - 12.6s
+  - Drop: 12.6s - 42.6s
+  - Outro: 184.5s - 214.5s
+
+============================================================
+✅ Analysis Complete!
+============================================================
+
+INFO:     127.0.0.1:53948 - "GET /api/analyze/2f0e2123-b4e9-4950-a3ec-9ed40c2b2716 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53950 - "POST /api/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53948 - "OPTIONS /api/analyze/e5519467-66be-4cd6-81f7-84de63fab4b0 HTTP/1.1" 200 OK
+🎵 Loading audio: temp_uploads/e5519467-66be-4cd6-81f7-84de63fab4b0.mp3
+✓ Loaded 214.46 seconds at 44100 Hz
+
+============================================================
+🎧 Full Audio Analysis: temp_uploads/e5519467-66be-4cd6-81f7-84de63fab4b0.mp3
+============================================================
+
+🎼 Analyzing tempo and beats...
+✓ BPM: 126.05, Beats: 440, Downbeats: 110
+🎹 Analyzing key and scale...
+✓ Key: A# major, Camelot: Unknown
+⚡ Analyzing energy levels...
+✓ Avg Energy: 0.429, Peak: 1.000
+📊 Detecting song segments...
+✓ Segments detected:
+  - Intro: 0.0s - 30.0s
+  - Buildup: 0.0s - 12.6s
+  - Drop: 12.6s - 42.6s
+  - Outro: 184.5s - 214.5s
+
+============================================================
+✅ Analysis Complete!
+============================================================
+
+INFO:     127.0.0.1:53950 - "GET /api/analyze/e5519467-66be-4cd6-81f7-84de63fab4b0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54071 - "POST /api/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54071 - "OPTIONS /api/analyze/653db1f1-112c-4a7c-bb08-50fdfb66cc0d HTTP/1.1" 200 OK
+🎵 Loading audio: temp_uploads/653db1f1-112c-4a7c-bb08-50fdfb66cc0d.mp3
+✓ Loaded 147.56 seconds at 44100 Hz
+
+============================================================
+🎧 Full Audio Analysis: temp_uploads/653db1f1-112c-4a7c-bb08-50fdfb66cc0d.mp3
+============================================================
+
+🎼 Analyzing tempo and beats...
+✓ BPM: 86.13, Beats: 160, Downbeats: 40
+🎹 Analyzing key and scale...
+✓ Key: A# minor, Camelot: Unknown
+⚡ Analyzing energy levels...
+✓ Avg Energy: 0.267, Peak: 1.000
+📊 Detecting song segments...
+✓ Segments detected:
+  - Intro: 0.0s - 22.1s
+  - Buildup: 0.0s - 11.6s
+  - Drop: 11.6s - 41.6s
+  - Outro: 125.4s - 147.6s
+
+============================================================
+✅ Analysis Complete!
+============================================================
+
+INFO:     127.0.0.1:54071 - "GET /api/analyze/653db1f1-112c-4a7c-bb08-50fdfb66cc0d HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54071 - "POST /api/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54071 - "OPTIONS /api/analyze/1f477f3e-c831-4acc-a3ed-1e83cdb00399 HTTP/1.1" 200 OK
+🎵 Loading audio: temp_uploads/1f477f3e-c831-4acc-a3ed-1e83cdb00399.mp3
+✓ Loaded 159.56 seconds at 44100 Hz
+
+============================================================
+🎧 Full Audio Analysis: temp_uploads/1f477f3e-c831-4acc-a3ed-1e83cdb00399.mp3
+============================================================
+
+🎼 Analyzing tempo and beats...
+✓ BPM: 84.72, Beats: 192, Downbeats: 48
+🎹 Analyzing key and scale...
+✓ Key: A major, Camelot: 11B
+⚡ Analyzing energy levels...
+✓ Avg Energy: 0.228, Peak: 1.000
+📊 Detecting song segments...
+✓ Segments detected:
+  - Intro: 0.0s - 23.9s
+  - Buildup: 0.0s - 10.7s
+  - Drop: 10.7s - 40.7s
+  - Outro: 135.6s - 159.6s
+
+============================================================
+✅ Analysis Complete!
+============================================================
+
+INFO:     127.0.0.1:54071 - "GET /api/analyze/1f477f3e-c831-4acc-a3ed-1e83cdb00399 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54072 - "OPTIONS /api/mix?track1_id=653db1f1-112c-4a7c-bb08-50fdfb66cc0d&transition_style=classic HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54071 - "POST /api/mix?track1_id=653db1f1-112c-4a7c-bb08-50fdfb66cc0d&transition_style=classic HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:54072 - "OPTIONS /api/mix?track1_id=653db1f1-112c-4a7c-bb08-50fdfb66cc0d&track2_id=1f477f3e-c831-4acc-a3ed-1e83cdb00399&transition_style=classic HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/Users/yongwoo.kim/Library/Python/3.12/lib/python/site-packages/pyrubberband/pyrb.py", line 70, in __rubberband
+    subprocess.check_call(arguments, stdout=DEVNULL, stderr=DEVNULL)
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 408, in check_call
+    retcode = call(*popenargs, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 389, in call
+    with Popen(*popenargs, **kwargs) as p:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 1950, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'rubberband'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/yongwoo.kim/Downloads/test111/backend/main.py", line 139, in mix_tracks
+    mixer.mix(
+  File "/Users/yongwoo.kim/Downloads/test111/advanced_mixer.py", line 373, in mix
+    audio2 = self.match_tempo(audio2, analysis2['bpm'], target_bpm)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yongwoo.kim/Downloads/test111/advanced_mixer.py", line 64, in match_tempo
+    stretched[ch] = pyrb.time_stretch(audio[ch], self.sample_rate, rate)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yongwoo.kim/Library/Python/3.12/lib/python/site-packages/pyrubberband/pyrb.py", line 139, in time_stretch
+    return __rubberband(y, sr, **rbargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yongwoo.kim/Library/Python/3.12/lib/python/site-packages/pyrubberband/pyrb.py", line 80, in __rubberband
+    raise RuntimeError('Failed to execute rubberband. '
+RuntimeError: Failed to execute rubberband. Please verify that rubberband-cli is installed.
+
+======================================================================
+🎧 Advanced Music Mixing
+======================================================================
+
+📊 Step 1: Analyzing tracks...
+
+🎵 Loading audio: temp_uploads/653db1f1-112c-4a7c-bb08-50fdfb66cc0d.mp3
+✓ Loaded 147.56 seconds at 44100 Hz
+
+============================================================
+🎧 Full Audio Analysis: temp_uploads/653db1f1-112c-4a7c-bb08-50fdfb66cc0d.mp3
+============================================================
+
+🎼 Analyzing tempo and beats...
+✓ BPM: 86.13, Beats: 160, Downbeats: 40
+🎹 Analyzing key and scale...
+✓ Key: A# minor, Camelot: Unknown
+⚡ Analyzing energy levels...
+✓ Avg Energy: 0.267, Peak: 1.000
+📊 Detecting song segments...
+✓ Segments detected:
+  - Intro: 0.0s - 22.1s
+  - Buildup: 0.0s - 11.6s
+  - Drop: 11.6s - 41.6s
+  - Outro: 125.4s - 147.6s
+
+============================================================
+✅ Analysis Complete!
+============================================================
+
+🎵 Loading audio: temp_uploads/1f477f3e-c831-4acc-a3ed-1e83cdb00399.mp3
+✓ Loaded 159.56 seconds at 44100 Hz
+
+============================================================
+🎧 Full Audio Analysis: temp_uploads/1f477f3e-c831-4acc-a3ed-1e83cdb00399.mp3
+============================================================
+
+🎼 Analyzing tempo and beats...
+✓ BPM: 84.72, Beats: 192, Downbeats: 48
+🎹 Analyzing key and scale...
+✓ Key: A major, Camelot: 11B
+⚡ Analyzing energy levels...
+✓ Avg Energy: 0.228, Peak: 1.000
+📊 Detecting song segments...
+✓ Segments detected:
+  - Intro: 0.0s - 23.9s
+  - Buildup: 0.0s - 10.7s
+  - Drop: 10.7s - 40.7s
+  - Outro: 135.6s - 159.6s
+
+============================================================
+✅ Analysis Complete!
+============================================================
+
+
+🎹 Step 2: Checking harmonic compatibility...
+
+  ⚠️  Keys may clash: Unknown key
+     Track1: A# minor (Unknown)
+     Track2: A major (11B)
+
+📂 Step 3: Loading audio files...
+
+
+⏱️  Step 4: Matching tempo...
+
+  🎚️  Stretching tempo: 84.7 → 86.1 BPM (rate: 1.017)
+INFO:     127.0.0.1:54071 - "POST /api/mix?track1_id=653db1f1-112c-4a7c-bb08-50fdfb66cc0d&track2_id=1f477f3e-c831-4acc-a3ed-1e83cdb00399&transition_style=classic HTTP/1.1" 500 Internal Server Error
+Traceback (most recent call last):
+  File "/Users/yongwoo.kim/Library/Python/3.12/lib/python/site-packages/pyrubberband/pyrb.py", line 70, in __rubberband
+    subprocess.check_call(arguments, stdout=DEVNULL, stderr=DEVNULL)
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 408, in check_call
+    retcode = call(*popenargs, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 389, in call
+    with Popen(*popenargs, **kwargs) as p:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 1950, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'rubberband'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/yongwoo.kim/Downloads/test111/backend/main.py", line 139, in mix_tracks
+    mixer.mix(
+  File "/Users/yongwoo.kim/Downloads/test111/advanced_mixer.py", line 373, in mix
+    audio2 = self.match_tempo(audio2, analysis2['bpm'], target_bpm)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yongwoo.kim/Downloads/test111/advanced_mixer.py", line 64, in match_tempo
+    stretched[ch] = pyrb.time_stretch(audio[ch], self.sample_rate, rate)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yongwoo.kim/Library/Python/3.12/lib/python/site-packages/pyrubberband/pyrb.py", line 139, in time_stretch
+    return __rubberband(y, sr, **rbargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yongwoo.kim/Library/Python/3.12/lib/python/site-packages/pyrubberband/pyrb.py", line 80, in __rubberband
+    raise RuntimeError('Failed to execute rubberband. '
+RuntimeError: Failed to execute rubberband. Please verify that rubberband-cli is installed.
+
+======================================================================
+🎧 Advanced Music Mixing
+======================================================================
+
+📊 Step 1: Analyzing tracks...
+
+🎵 Loading audio: temp_uploads/653db1f1-112c-4a7c-bb08-50fdfb66cc0d.mp3
+✓ Loaded 147.56 seconds at 44100 Hz
+
+============================================================
+🎧 Full Audio Analysis: temp_uploads/653db1f1-112c-4a7c-bb08-50fdfb66cc0d.mp3
+============================================================
+
+🎼 Analyzing tempo and beats...
+✓ BPM: 86.13, Beats: 160, Downbeats: 40
+🎹 Analyzing key and scale...
+✓ Key: A# minor, Camelot: Unknown
+⚡ Analyzing energy levels...
+✓ Avg Energy: 0.267, Peak: 1.000
+📊 Detecting song segments...
+✓ Segments detected:
+  - Intro: 0.0s - 22.1s
+  - Buildup: 0.0s - 11.6s
+  - Drop: 11.6s - 41.6s
+  - Outro: 125.4s - 147.6s
+
+============================================================
+✅ Analysis Complete!
+============================================================
+
+🎵 Loading audio: temp_uploads/1f477f3e-c831-4acc-a3ed-1e83cdb00399.mp3
+✓ Loaded 159.56 seconds at 44100 Hz
+
+============================================================
+🎧 Full Audio Analysis: temp_uploads/1f477f3e-c831-4acc-a3ed-1e83cdb00399.mp3
+============================================================
+
+🎼 Analyzing tempo and beats...
+✓ BPM: 84.72, Beats: 192, Downbeats: 48
+🎹 Analyzing key and scale...
+✓ Key: A major, Camelot: 11B
+⚡ Analyzing energy levels...
+✓ Avg Energy: 0.228, Peak: 1.000
+📊 Detecting song segments...
+✓ Segments detected:
+  - Intro: 0.0s - 23.9s
+  - Buildup: 0.0s - 10.7s
+  - Drop: 10.7s - 40.7s
+  - Outro: 135.6s - 159.6s
+
+============================================================
+✅ Analysis Complete!
+============================================================
+
+
+🎹 Step 2: Checking harmonic compatibility...
+
+  ⚠️  Keys may clash: Unknown key
+     Track1: A# minor (Unknown)
+     Track2: A major (11B)
+
+📂 Step 3: Loading audio files...
+
+
+⏱️  Step 4: Matching tempo...
+
+  🎚️  Stretching tempo: 84.7 → 86.1 BPM (rate: 1.017)
+INFO:     127.0.0.1:54071 - "POST /api/mix?track1_id=653db1f1-112c-4a7c-bb08-50fdfb66cc0d&track2_id=1f477f3e-c831-4acc-a3ed-1e83cdb00399&transition_style=classic HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:54739 - "OPTIONS /api/mix?track1_id=653db1f1-112c-4a7c-bb08-50fdfb66cc0d&track2_id=1f477f3e-c831-4acc-a3ed-1e83cdb00399&transition_style=classic HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/Users/yongwoo.kim/Library/Python/3.12/lib/python/site-packages/pyrubberband/pyrb.py", line 70, in __rubberband
+    subprocess.check_call(arguments, stdout=DEVNULL, stderr=DEVNULL)
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 408, in check_call
+    retcode = call(*popenargs, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 389, in call
+    with Popen(*popenargs, **kwargs) as p:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 1950, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'rubberband'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/yongwoo.kim/Downloads/test111/backend/main.py", line 139, in mix_tracks
+    mixer.mix(
+  File "/Users/yongwoo.kim/Downloads/test111/advanced_mixer.py", line 373, in mix
+    audio2 = self.match_tempo(audio2, analysis2['bpm'], target_bpm)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yongwoo.kim/Downloads/test111/advanced_mixer.py", line 64, in match_tempo
+    stretched[ch] = pyrb.time_stretch(audio[ch], self.sample_rate, rate)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yongwoo.kim/Library/Python/3.12/lib/python/site-packages/pyrubberband/pyrb.py", line 139, in time_stretch
+    return __rubberband(y, sr, **rbargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yongwoo.kim/Library/Python/3.12/lib/python/site-packages/pyrubberband/pyrb.py", line 80, in __rubberband
+    raise RuntimeError('Failed to execute rubberband. '
+RuntimeError: Failed to execute rubberband. Please verify that rubberband-cli is installed.
+
+======================================================================
+🎧 Advanced Music Mixing
+======================================================================
+
+📊 Step 1: Analyzing tracks...
+
+🎵 Loading audio: temp_uploads/653db1f1-112c-4a7c-bb08-50fdfb66cc0d.mp3
+✓ Loaded 147.56 seconds at 44100 Hz
+
+============================================================
+🎧 Full Audio Analysis: temp_uploads/653db1f1-112c-4a7c-bb08-50fdfb66cc0d.mp3
+============================================================
+
+🎼 Analyzing tempo and beats...
+✓ BPM: 86.13, Beats: 160, Downbeats: 40
+🎹 Analyzing key and scale...
+✓ Key: A# minor, Camelot: Unknown
+⚡ Analyzing energy levels...
+✓ Avg Energy: 0.267, Peak: 1.000
+📊 Detecting song segments...
+✓ Segments detected:
+  - Intro: 0.0s - 22.1s
+  - Buildup: 0.0s - 11.6s
+  - Drop: 11.6s - 41.6s
+  - Outro: 125.4s - 147.6s
+
+============================================================
+✅ Analysis Complete!
+============================================================
+
+🎵 Loading audio: temp_uploads/1f477f3e-c831-4acc-a3ed-1e83cdb00399.mp3
+✓ Loaded 159.56 seconds at 44100 Hz
+
+============================================================
+🎧 Full Audio Analysis: temp_uploads/1f477f3e-c831-4acc-a3ed-1e83cdb00399.mp3
+============================================================
+
+🎼 Analyzing tempo and beats...
+✓ BPM: 84.72, Beats: 192, Downbeats: 48
+🎹 Analyzing key and scale...
+✓ Key: A major, Camelot: 11B
+⚡ Analyzing energy levels...
+✓ Avg Energy: 0.228, Peak: 1.000
+📊 Detecting song segments...
+✓ Segments detected:
+  - Intro: 0.0s - 23.9s
+  - Buildup: 0.0s - 10.7s
+  - Drop: 10.7s - 40.7s
+  - Outro: 135.6s - 159.6s
+
+============================================================
+✅ Analysis Complete!
+============================================================
+
+
+🎹 Step 2: Checking harmonic compatibility...
+
+  ⚠️  Keys may clash: Unknown key
+     Track1: A# minor (Unknown)
+     Track2: A major (11B)
+
+📂 Step 3: Loading audio files...
+
+
+⏱️  Step 4: Matching tempo...
+
+  🎚️  Stretching tempo: 84.7 → 86.1 BPM (rate: 1.017)
+INFO:     127.0.0.1:54739 - "POST /api/mix?track1_id=653db1f1-112c-4a7c-bb08-50fdfb66cc0d&track2_id=1f477f3e-c831-4acc-a3ed-1e83cdb00399&transition_style=classic HTTP/1.1" 500 Internal Server Error

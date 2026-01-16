@@ -1,0 +1,9 @@
+{
+  "transition_bars": 16,
+  "sync_beats": true,
+  "match_tempo": true,
+  "harmonic_mixing": true,
+  "transition_style": "classic",
+  "eq_matching": false,
+  "auto_detect_transition": true
+}
