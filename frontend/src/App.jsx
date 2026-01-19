@@ -201,6 +201,33 @@ const SkyButton = ({ onClick, disabled, children, secondary }) => (
   </button>
 );
 
+// --- AdSense Component ---
+const AdBanner = ({ slotId }) => {
+  useEffect(() => {
+    try {
+      // Check if adsbygoogle is available and script is loaded
+      if (window.adsbygoogle) {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      }
+    } catch (e) {
+      console.error("AdSense Error:", e);
+    }
+  }, []);
+
+  return (
+    <div className="my-6 w-full max-w-4xl mx-auto overflow-hidden rounded-2xl bg-white/10 flex items-center justify-center min-h-[100px] border border-white/5 border-dashed">
+      <ins className="adsbygoogle"
+        style={{ display: 'block', width: '100%' }}
+        data-ad-client="ca-pub-YOUR_PUBLISHER_ID"
+        data-ad-slot={slotId}
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      {/* Fallback Label for Dev Mode */}
+      <span className="absolute text-[10px] text-slate-400 font-mono tracking-widest pointer-events-none opacity-20">ADSENSE AD SPACE</span>
+    </div>
+  );
+};
+
 
 // --- Main App ---
 
@@ -300,6 +327,9 @@ function App() {
       </nav>
 
       <div className="container mx-auto px-4 py-8 max-w-5xl relative z-10 flex flex-col items-center">
+
+        {/* Top Ad */}
+        <AdBanner slotId="YOUR_TOP_SLOT_ID" />
 
         {/* Floating Main Card */}
         <motion.div
@@ -413,6 +443,9 @@ function App() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Bottom Ad */}
+        <AdBanner slotId="YOUR_BOTTOM_SLOT_ID" />
 
         <div className="mt-12 opacity-60">
           <div className="bg-white/20 px-6 py-3 rounded-full text-xs font-semibold text-slate-500 tracking-wider">
