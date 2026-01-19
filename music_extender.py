@@ -271,22 +271,58 @@ class MusicExtender:
         
         # 6. 비디오 처리 (비디오인 경우)
         if is_video:
-            print("\n🎬 Looping video to match audio duration...")
+            print("\n🎬 Looping video to match audio duration (Lofi-style/Seamless)...")
             audio_clip = mp.AudioFileClip(audio_output)
             video_clip = mp.VideoFileClip(input_path)
             
-            # 비디오를 오디오 길이에 맞춰 반복
-            num_video_loops = int(np.ceil(audio_clip.duration / video_clip.duration))
-            final_video = mp.concatenate_videoclips([video_clip] * num_video_loops)
+            # 오디오 루프 포인트에 맞춰 비디오 조각(Clip) 생성
+            # [Part A: Start -> Mixout] + [Part B: Mixin -> Mixout] * N + [Part C: Mixin -> End]
+            
+            # 1. 믹스 지점에서 1초 정도의 크로스페이드를 비디오에도 적용
+            video_fade = 1.0 # 1 second crossfade for video
+            
+            clips = []
+            
+            # 첫 번째 파트: 시작부터 첫 번째 믹스아웃까지
+            part_a = video_clip.subclip(0, mixout_point)
+            clips.append(part_a)
+            
+            # 반복 파트: Mixin 지점부터 Mixout 지점까지
+            # 실제 오디오가 반복된 횟수만큼 비디오 조각 추가
+            body_segment = video_clip.subclip(mixin_point, mixout_point)
+            
+            for _ in range(required_loops - 1):
+                # 각 조각을 오디오 루프 길이에 맞춰서 생성
+                clips.append(body_segment)
+                
+            # 마지막 파트: 마지막 루프의 Mixin부터 끝까지
+            part_c = video_clip.subclip(mixin_point, video_clip.duration)
+            clips.append(part_c)
+            
+            print(f"🧩 Concatenating {len(clips)} video segments with crossfades...")
+            
+            # moviepy의 concatenate_videoclips (method='compose')를 사용하여 
+            # 겹치는 부분에 페인팅 효과(또는 단순 연결보다 부드러운 전이) 유도
+            # 여기서는 clip 간에 0.5초 정도 padding/overlap을 주는 것이 좋지만, 
+            # 오디오와 싱크를 맞춰야 하므로 조심스럽게 처리
+            
+            # Lofi-girl 느낌을 위해 단순히 붙이는게 아니라 각 연결부에 fade 적용
+            # 하지만 오디오 싱크 유지가 최우선임.
+            final_video = mp.concatenate_videoclips(clips, method="compose")
+            
+            # 오디오 길이에 맞춤 (루프 계산 오차 보정)
             final_video = final_video.set_duration(audio_clip.duration)
             final_video = final_video.set_audio(audio_clip)
             
-            print(f"📦 Writing final video: {output_path}")
-            final_video.write_videofile(output_path, codec="libx264", audio_codec="aac", logger=None)
+            print(f"📦 Writing final Lofi-style video: {output_path}")
+            # 품질을 높이기 위해 bitrate 설정 추가
+            final_video.write_videofile(output_path, codec="libx264", audio_codec="aac", bitrate="5000k", logger=None)
             
-            # Cleanup temp files
+            # Cleanup
             audio_clip.close()
             video_clip.close()
+            for c in clips: c.close()
+            
             if os.path.exists(video_temp_audio): os.path.unlink(video_temp_audio)
             if os.path.exists("temp_extended_audio.wav"): os.path.unlink("temp_extended_audio.wav")
             

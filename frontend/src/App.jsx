@@ -432,7 +432,7 @@ function App() {
                         ))}
                       </div>
                       <p className="text-xs text-slate-400 text-center px-4 leading-relaxed">
-                        The AI will loop your {isProcessing ? 'content' : (extenderSource?.file?.type.startsWith('video') ? 'video & audio' : 'audio')} seamlessly for {loopDuration}.
+                        The AI will loop your {isProcessing ? 'content' : (extenderSource?.file?.type.startsWith('video') ? 'video & audio' : 'audio')} seamlessly in <b>Lofi-girl style</b> for {loopDuration}.
                       </p>
                     </div>
                   </div>
