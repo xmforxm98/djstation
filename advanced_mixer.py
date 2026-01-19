@@ -320,113 +320,122 @@ class AdvancedMixer:
             auto_detect: bool = True) -> str:
         """
         두 트랙을 믹싱
+        """
+        return self.mix_playlist([track1_path, track2_path], output_path, 
+                                sync_beats, match_tempo, harmonic_mix, 
+                                transition_bars, transition_style, auto_detect)
+
+    def mix_playlist(self, track_paths: list, output_path: str,
+                    sync_beats: bool = True,
+                    match_tempo: bool = True,
+                    harmonic_mix: bool = True,
+                    transition_bars: int = 16,
+                    transition_style: str = 'classic',
+                    auto_detect: bool = True) -> str:
+        """
+        여러 트랙을 순차적으로 믹싱 (플레이리스트 방식)
         
         Args:
-            track1_path: 첫 번째 트랙 경로
-            track2_path: 두 번째 트랙 경로
+            track_paths: 트랙 파일 경로 목록
             output_path: 출력 파일 경로
-            sync_beats: 비트 동기화 여부
-            match_tempo: 템포 매칭 여부
-            harmonic_mix: 하모닉 믹싱 여부
-            transition_bars: 전환 길이 (바)
-            transition_style: 전환 스타일
-            auto_detect: 자동 전환점 감지
-            
-        Returns:
-            출력 파일 경로
+            ... (기타 옵션은 mix와 동일)
         """
-        print(f"\n{'='*70}")
-        print(f"🎧 Advanced Music Mixing")
-        print(f"{'='*70}\n")
-        
-        # 1. 분석
-        print("📊 Step 1: Analyzing tracks...\n")
-        analyzer1 = AudioAnalyzer(track1_path)
-        analysis1 = analyzer1.analyze_full()
-        
-        analyzer2 = AudioAnalyzer(track2_path)
-        analysis2 = analyzer2.analyze_full()
-        
-        # 2. 하모닉 호환성 체크
-        if harmonic_mix:
-            print("\n🎹 Step 2: Checking harmonic compatibility...\n")
-            compatible, reason = AudioAnalyzer.are_keys_compatible(
-                analysis1['camelot'], analysis2['camelot']
-            )
+        if not track_paths:
+            raise ValueError("No tracks provided for mixing")
             
-            if compatible:
-                print(f"  ✅ Keys are compatible: {reason}")
+        if len(track_paths) == 1:
+            # 트랙이 하나면 그냥 복사(포맷 변환)만 함
+            audio, sr = self.load_audio(track_paths[0])
+            sf.write(output_path, audio.T, self.sample_rate)
+            return output_path
+
+        print(f"\n{'='*70}")
+        print(f"🎧 Playlist Mixing ({len(track_paths)} tracks)")
+        print(f"{'='*70}\n")
+
+        # 첫 번째 트랙 로드 및 초기화
+        current_audio, sr = self.load_audio(track_paths[0])
+        analyzer = AudioAnalyzer(track_paths[0])
+        current_analysis = analyzer.analyze_full()
+        
+        # 첫 번째 트랙 정규화
+        current_audio = self.normalize_audio(current_audio)
+        
+        # 템포 기준 (첫 트랙 또는 평균으로 설정 가능, 여기선 첫 트랙 기준)
+        reference_bpm = current_analysis['bpm']
+
+        for i in range(1, len(track_paths)):
+            next_track_path = track_paths[i]
+            print(f"\n📎 Mixing in Track {i+1}: {os.path.basename(next_track_path)}")
+            
+            # 다음 트랙 분석 및 로드
+            next_analyzer = AudioAnalyzer(next_track_path)
+            next_analysis = next_analyzer.analyze_full()
+            next_audio, sr_next = self.load_audio(next_track_path)
+            
+            # 템포 매칭 (이전 트랙의 BPM에 맞춤)
+            if match_tempo:
+                next_audio = self.match_tempo(next_audio, next_analysis['bpm'], reference_bpm)
+                # 비트 정보 업데이트
+                tempo_ratio = reference_bpm / next_analysis['bpm']
+                next_analysis['beats'] = next_analysis['beats'] / tempo_ratio
+
+            # 하모닉 체크 (참고용)
+            if harmonic_mix:
+                comp, reason = AudioAnalyzer.are_keys_compatible(current_analysis['camelot'], next_analysis['camelot'])
+                print(f"  🎹 Key: {next_analysis['full_key']} ({next_analysis['camelot']}) -> " + ("✅ Compatible" if comp else f"⚠️ {reason}"))
+
+            # 전환점 계산
+            if auto_detect:
+                mixout_point, mixin_point = self.find_optimal_transition_point(current_analysis, next_analysis, transition_bars)
             else:
-                print(f"  ⚠️  Keys may clash: {reason}")
-                print(f"     Track1: {analysis1['full_key']} ({analysis1['camelot']})")
-                print(f"     Track2: {analysis2['full_key']} ({analysis2['camelot']})")
-        
-        # 3. 오디오 로드
-        print("\n📂 Step 3: Loading audio files...\n")
-        audio1, sr1 = self.load_audio(track1_path)
-        audio2, sr2 = self.load_audio(track2_path)
-        
-        # 4. 템포 매칭
-        if match_tempo:
-            print("\n⏱️  Step 4: Matching tempo...\n")
-            target_bpm = analysis1['bpm']  # Track1의 BPM에 맞춤
-            audio2 = self.match_tempo(audio2, analysis2['bpm'], target_bpm)
+                bars_duration = (60 / reference_bpm) * 4 * transition_bars
+                mixout_point = (current_audio.shape[1] / self.sample_rate) - bars_duration
+                mixin_point = 0
+
+            # 비트 정렬
+            if sync_beats:
+                current_audio, next_audio, mixout_point = self.align_beats(
+                    current_audio, next_audio,
+                    current_analysis['beats'], next_analysis['beats'],
+                    mixout_point
+                )
+
+            # 크로스페이드 생성
+            crossfade_duration = (60 / reference_bpm) * 4 * transition_bars
             
-            # 비트 정보도 조정
-            tempo_ratio = target_bpm / analysis2['bpm']
-            analysis2['beats'] = analysis2['beats'] / tempo_ratio
-            analysis2['downbeats'] = analysis2['downbeats'] / tempo_ratio
-        
-        # 5. 전환점 찾기
-        print("\n🎯 Step 5: Finding transition points...\n")
-        if auto_detect:
-            mixout_point, mixin_point = self.find_optimal_transition_point(
-                analysis1, analysis2, transition_bars
+            # mixout_point 이후의 beats는 audio2의 beats로 대체되거나 offset 되어야 함 (여기선 단순 누적)
+            current_audio = self.create_crossfade(
+                current_audio, next_audio,
+                mixout_point, mixin_point,
+                crossfade_duration,
+                transition_style
             )
-        else:
-            # 수동: Track1 끝에서 transition_bars 전
-            bars_duration = (60 / analysis1['bpm']) * 4 * transition_bars
-            mixout_point = analysis1['duration'] - bars_duration
-            mixin_point = 0
+            
+            # 다음 믹싱을 위한 current_analysis 업데이트
+            # 믹스된 결과물의 새로운 비트와 분석 데이터가 필요하지만, 
+            # 단순화를 위해 Track2의 데이터를 offset 시켜서 사용
+            offset = mixout_point - mixin_point
+            current_analysis = {
+                'bpm': reference_bpm,
+                'beats': next_analysis['beats'] + offset,
+                'segments': {
+                    'outro': {
+                        'start': next_analysis['segments']['outro']['start'] + offset,
+                        'end': next_analysis['segments']['outro']['end'] + offset
+                    }
+                },
+                'camelot': next_analysis['camelot']
+            }
+            
+            print(f"  ✓ Track {i+1} merged. Current total length: {current_audio.shape[1]/self.sample_rate:.1f}s")
+
+        # 최종 정규화
+        current_audio = self.normalize_audio(current_audio)
         
-        # 6. 비트 정렬
-        if sync_beats:
-            print("\n🎵 Step 6: Synchronizing beats...\n")
-            audio1, audio2, mixout_point = self.align_beats(
-                audio1, audio2,
-                analysis1['beats'], analysis2['beats'],
-                mixout_point
-            )
-        
-        # 7. 크로스페이드 생성
-        print("\n🎛️  Step 7: Creating crossfade...\n")
-        crossfade_duration = (60 / analysis1['bpm']) * 4 * transition_bars
-        
-        mixed = self.create_crossfade(
-            audio1, audio2,
-            mixout_point, mixin_point,
-            crossfade_duration,
-            transition_style
-        )
-        
-        # 8. 정규화
-        print("\n🔊 Step 8: Normalizing output...\n")
-        mixed = self.normalize_audio(mixed)
-        
-        # 9. 저장
-        print(f"\n💾 Step 9: Saving to {output_path}...\n")
-        
-        # Transpose for soundfile (channels, samples) -> (samples, channels)
-        mixed_transposed = mixed.T
-        
-        sf.write(output_path, mixed_transposed, self.sample_rate)
-        
-        print(f"\n{'='*70}")
-        print(f"✅ Mixing Complete!")
-        print(f"{'='*70}")
-        print(f"📁 Output: {output_path}")
-        print(f"⏱️  Duration: {mixed.shape[1] / self.sample_rate:.2f}s")
-        print(f"{'='*70}\n")
+        # 저장
+        sf.write(output_path, current_audio.T, self.sample_rate)
+        print(f"\n✅ All {len(track_paths)} tracks mixed successfully!")
         
         return output_path
 

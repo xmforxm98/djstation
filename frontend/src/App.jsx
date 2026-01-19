@@ -101,12 +101,14 @@ const DocsView = ({ onClose }) => {
 
 // --- Sky Theme Components ---
 
-const FileUploader = ({ onFileSelect, label, trackId, icon }) => {
+const FileUploader = ({ onFileSelect, label, icon, acceptVideo }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: { 'audio/*': ['.mp3', '.wav', '.flac', '.m4a'] },
+    accept: acceptVideo
+      ? { 'audio/*': ['.mp3', '.wav', '.flac', '.m4a'], 'video/*': ['.mp4', '.mov', '.avi'] }
+      : { 'audio/*': ['.mp3', '.wav', '.flac', '.m4a'] },
     onDrop: (acceptedFiles) => {
       if (acceptedFiles.length > 0) {
-        onFileSelect(trackId, acceptedFiles[0]);
+        onFileSelect(acceptedFiles[0]);
       }
     },
     maxFiles: 1
@@ -115,18 +117,18 @@ const FileUploader = ({ onFileSelect, label, trackId, icon }) => {
   return (
     <div
       {...getRootProps()}
-      className={`relative h-40 rounded-3xl transition-all flex flex-col items-center justify-center cursor-pointer border border-white/40
+      className={`relative h-32 rounded-3xl transition-all flex flex-col items-center justify-center cursor-pointer border border-white/40
         ${isDragActive ? 'bg-white/60 scale-105 shadow-xl' : 'bg-white/20 hover:bg-white/40 hover:scale-[1.02]'}
       `}
     >
       <input {...getInputProps()} />
       <div className="z-10 text-center text-slate-700">
-        <div className="bg-white/50 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm text-blue-600">
-          {icon || <Music className="w-6 h-6" />}
+        <div className="bg-white/50 w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-sm text-blue-600">
+          {icon || <Music className="w-5 h-5" />}
         </div>
         <p className="text-sm font-bold tracking-tight">{label}</p>
         <p className="text-xs text-slate-500 mt-1 opacity-70">
-          {isDragActive ? 'Release to upload' : 'MPEG-3 • WAV • FLAC'}
+          {isDragActive ? 'Drop it here' : (acceptVideo ? 'Audio or Video' : 'Audio Files')}
         </p>
       </div>
     </div>
@@ -232,69 +234,74 @@ const AdBanner = ({ slotId }) => {
 // --- Main App ---
 
 function App() {
-  const [tracks, setTracks] = useState({ track1: null, track2: null });
+  const [playlist, setPlaylist] = useState([]);
+  const [extenderSource, setExtenderSource] = useState(null);
+  const [loopDuration, setLoopDuration] = useState('30m');
   const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState(null);
   const [mode, setMode] = useState('mix');
   const [showDocs, setShowDocs] = useState(false);
 
-  // API Client with Auth Header
   const apiClient = axios.create({
     baseURL: 'http://localhost:8000/api',
     headers: { 'X-API-Key': 'sk_demo_pro_99999' }
   });
 
-  const handleFileUpload = async (trackId, file) => {
+  const handleFileUpload = async (file) => {
+    const tempId = Math.random().toString(36).substr(2, 9);
+    const newTrack = { id: tempId, file, analysis: null };
+
+    if (mode === 'mix') {
+      setPlaylist(prev => [...prev, newTrack]);
+    } else {
+      setExtenderSource(newTrack);
+    }
+
     const formData = new FormData();
     formData.append('file', file);
 
     try {
-      setTracks(prev => ({ ...prev, [trackId]: { file, analysis: null } }));
       const uploadRes = await apiClient.post('/upload', formData);
       const fileId = uploadRes.data.file_id;
       const analyzeRes = await apiClient.get(`/analyze/${fileId}`);
 
-      setTracks(prev => ({
-        ...prev,
-        [trackId]: {
-          file,
-          fileId,
-          analysis: analyzeRes.data
-        }
-      }));
+      const updatedTrack = { ...newTrack, fileId, analysis: analyzeRes.data };
 
+      if (mode === 'mix') {
+        setPlaylist(prev => prev.map(t => t.id === tempId ? updatedTrack : t));
+      } else {
+        setExtenderSource(updatedTrack);
+      }
     } catch (err) {
       console.error(err);
-      alert("Upload failed. Is the backend running?");
+      alert("Upload failed.");
     }
   };
 
   const handleAction = async () => {
+    if (isProcessing) return;
     setIsProcessing(true);
     setResult(null);
 
     try {
       let res;
       if (mode === 'mix') {
-        res = await apiClient.post('/mix', null, {
-          params: {
-            track1_id: tracks.track1.fileId,
-            track2_id: tracks.track2.fileId,
-            transition_style: 'classic'
-          }
+        const trackIds = playlist.filter(t => t.fileId).map(t => t.fileId);
+        res = await apiClient.post('/mix', {
+          track_ids: trackIds,
+          transition_style: 'classic'
         });
       } else {
         res = await apiClient.post('/extend', null, {
           params: {
-            file_id: tracks.track1.fileId,
-            duration: '30m'
+            file_id: extenderSource.fileId,
+            duration: loopDuration
           }
         });
       }
 
       const { output_id } = res.data;
       setResult(`http://localhost:8000/api/download/${output_id}`);
-
     } catch (err) {
       console.error(err);
       alert("Processing failed.");
@@ -326,8 +333,7 @@ function App() {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 py-8 max-w-5xl relative z-10 flex flex-col items-center">
-
+      <div className="container mx-auto px-4">
         {/* Top Ad */}
         <AdBanner slotId="YOUR_TOP_SLOT_ID" />
 
@@ -347,71 +353,102 @@ function App() {
                   onClick={() => setMode('mix')}
                   className={`px-8 py-3 rounded-xl font-bold text-sm transition-all ${mode === 'mix' ? 'bg-white shadow-md text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}
                 >
-                  Mix Tracks
+                  Playlist Mix
                 </button>
                 <button
                   onClick={() => setMode('extend')}
                   className={`px-8 py-3 rounded-xl font-bold text-sm transition-all ${mode === 'extend' ? 'bg-white shadow-md text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}
                 >
-                  Extend Loop
+                  Infinite Loop
                 </button>
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 mb-10 items-start">
-              {/* Input A */}
-              <div className="space-y-4">
-                {!tracks.track1 ? (
-                  <FileUploader
-                    label={mode === 'mix' ? "Track A" : "Source Track"}
-                    trackId="track1"
-                    onFileSelect={handleFileUpload}
-                    icon={<Music className="w-6 h-6 text-blue-600" />}
-                  />
-                ) : (
-                  <FloatingTrackCard
-                    track={tracks.track1}
-                    onRemove={() => setTracks(prev => ({ ...prev, track1: null }))}
-                  />
-                )}
-              </div>
-
-              {/* Input B (Mix Mode Only) */}
-              <div className="space-y-4">
-                {mode === 'mix' ? (
-                  !tracks.track2 ? (
-                    <FileUploader
-                      label="Track B"
-                      trackId="track2"
-                      onFileSelect={handleFileUpload}
-                      icon={<Music className="w-6 h-6 text-indigo-600" />}
-                    />
-                  ) : (
-                    <FloatingTrackCard
-                      track={tracks.track2}
-                      onRemove={() => setTracks(prev => ({ ...prev, track2: null }))}
-                    />
-                  )
-                ) : (
-                  <div className="h-full min-h-[160px] flex flex-col justify-center items-center bg-white/20 rounded-3xl border border-white/30 text-center p-6">
-                    <span className="text-3xl font-bold text-slate-700 mb-2">30 min</span>
-                    <span className="text-slate-500 font-medium">Target Loop Duration</span>
-                    <p className="text-xs text-slate-400 mt-2 max-w-[200px]">Optimal intro/outro points will be automatically detected.</p>
+            <div className="w-full mb-10">
+              {mode === 'mix' ? (
+                <div className="space-y-4">
+                  <div className="flex justify-between items-end mb-2">
+                    <h3 className="text-xl font-bold text-slate-800">Playlist Manager</h3>
+                    <span className="text-xs font-bold text-slate-500 bg-slate-200 px-2 py-1 rounded-lg">
+                      {playlist.length} TRACKS
+                    </span>
                   </div>
-                )}
-              </div>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                      <AnimatePresence>
+                        {playlist.map((track) => (
+                          <FloatingTrackCard
+                            key={track.id}
+                            track={track}
+                            onRemove={() => setPlaylist(prev => prev.filter(t => t.id !== track.id))}
+                          />
+                        ))}
+                      </AnimatePresence>
+                      {playlist.length === 0 && (
+                        <div className="h-20 flex items-center justify-center border-2 border-dashed border-slate-300 rounded-3xl text-slate-400 font-medium">
+                          No tracks added yet
+                        </div>
+                      )}
+                    </div>
+
+                    <FileUploader
+                      label="Add Next Track"
+                      onFileSelect={handleFileUpload}
+                      icon={<Music className="w-6 h-6 text-blue-600" />}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 gap-8 items-start">
+                  <div className="space-y-4">
+                    {!extenderSource ? (
+                      <FileUploader
+                        label="Source Media (Audio/Video)"
+                        onFileSelect={handleFileUpload}
+                        icon={<Wand2 className="w-6 h-6 text-purple-600" />}
+                        acceptVideo={true}
+                      />
+                    ) : (
+                      <FloatingTrackCard
+                        track={extenderSource}
+                        onRemove={() => setExtenderSource(null)}
+                      />
+                    )}
+                  </div>
+
+                  <div className="bg-white/20 rounded-3xl border border-white/30 p-6">
+                    <h4 className="text-sm font-bold text-slate-600 mb-4 uppercase tracking-widest text-center">Settings</h4>
+                    <div className="flex flex-col gap-4">
+                      <div className="flex justify-center gap-2">
+                        {['15m', '30m', '60m', '120m'].map(d => (
+                          <button
+                            key={d}
+                            onClick={() => setLoopDuration(d)}
+                            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${loopDuration === d ? 'bg-slate-900 text-white shadow-lg' : 'bg-white/40 text-slate-600 hover:bg-white/60'}`}
+                          >
+                            {d}
+                          </button>
+                        ))}
+                      </div>
+                      <p className="text-xs text-slate-400 text-center px-4 leading-relaxed">
+                        The AI will loop your {isProcessing ? 'content' : (extenderSource?.file?.type.startsWith('video') ? 'video & audio' : 'audio')} seamlessly for {loopDuration}.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Main Action */}
             <div className="flex justify-center pb-4">
               <SkyButton
                 onClick={handleAction}
-                disabled={isProcessing || !tracks.track1 || (mode === 'mix' && !tracks.track2)}
+                disabled={isProcessing || (mode === 'mix' ? playlist.length < 2 : !extenderSource)}
               >
                 {isProcessing ? (
-                  <><Wand2 className="w-5 h-5 animate-spin" /> Processing Media...</>
+                  <><Wand2 className="w-5 h-5 animate-spin" /> {mode === 'mix' ? 'Mixing Tracks...' : 'Generating Loop...'}</>
                 ) : (
-                  <><Wand2 className="w-5 h-5" /> {mode === 'mix' ? 'Generate Mix' : 'Extend Track'}</>
+                  <><Wand2 className="w-5 h-5" /> {mode === 'mix' ? 'Generate Non-stop Mix' : 'Create Extended Track'}</>
                 )}
               </SkyButton>
             </div>
@@ -428,8 +465,8 @@ function App() {
               className="mt-8 w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-2 z-20"
             >
               <div className="bg-slate-50 rounded-[20px] p-6 text-center border border-slate-100">
-                <h3 className="text-xl font-bold text-slate-800 mb-2">Your Mix is Ready!</h3>
-                <p className="text-slate-500 mb-6 text-sm">Download your high-fidelity audio file below.</p>
+                <h3 className="text-xl font-bold text-slate-800 mb-2">Your Media is Ready!</h3>
+                <p className="text-slate-500 mb-6 text-sm">Download your high-fidelity file below.</p>
 
                 <a
                   href={result}
@@ -437,7 +474,7 @@ function App() {
                   className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-8 py-3 rounded-xl transition-all shadow-lg shadow-green-200"
                 >
                   <Download className="w-5 h-5" />
-                  Download .MP3
+                  Download Result
                 </a>
               </div>
             </motion.div>
@@ -449,7 +486,7 @@ function App() {
 
         <div className="mt-12 opacity-60">
           <div className="bg-white/20 px-6 py-3 rounded-full text-xs font-semibold text-slate-500 tracking-wider">
-            POWERED BY PYTHON AUDIO ENGINE
+            POWERED BY PYTHON AI AUDIO/VIDEO ENGINE
           </div>
         </div>
 

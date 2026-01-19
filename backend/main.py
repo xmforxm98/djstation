@@ -110,25 +110,31 @@ async def analyze_audio(file_id: str, api_key: str = Depends(get_api_key)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+from pydantic import BaseModel
+
+class MixRequest(BaseModel):
+    track_ids: List[str]
+    transition_style: str = 'classic'
+
+class ExtendRequest(BaseModel):
+    file_id: str
+    duration: str = '30m'
+
 @app.post("/api/mix")
 async def mix_tracks(
-    track1_id: str, 
-    track2_id: str, 
-    transition_style: str = 'classic',
+    request: MixRequest,
     api_key: str = Depends(get_api_key)
 ):
-    """두 트랙 믹싱"""
-    # 파일 1 찾기
-    files1 = list(UPLOAD_DIR.glob(f"{track1_id}.*"))
-    if not files1:
-        raise HTTPException(status_code=404, detail="Track 1 not found")
-    path1 = str(files1[0])
-    
-    # 파일 2 찾기
-    files2 = list(UPLOAD_DIR.glob(f"{track2_id}.*"))
-    if not files2:
-        raise HTTPException(status_code=404, detail="Track 2 not found")
-    path2 = str(files2[0])
+    """여러 트랙을 플레이리스트처럼 믹싱"""
+    if not request.track_ids or len(request.track_ids) < 1:
+        raise HTTPException(status_code=400, detail="At least one track ID is required")
+
+    paths = []
+    for tid in request.track_ids:
+        found = list(UPLOAD_DIR.glob(f"{tid}.*"))
+        if not found:
+            raise HTTPException(status_code=404, detail=f"Track ID {tid} not found")
+        paths.append(str(found[0]))
     
     output_id = str(uuid.uuid4())
     output_filename = f"mixed_{output_id}.mp3"
@@ -136,13 +142,13 @@ async def mix_tracks(
     
     try:
         mixer = AdvancedMixer()
-        mixer.mix(
-            path1, path2, output_path,
+        mixer.mix_playlist(
+            paths, output_path,
             sync_beats=True,
             match_tempo=True,
             harmonic_mix=True,
             transition_bars=16,
-            transition_style=transition_style,
+            transition_style=request.transition_style,
             auto_detect=True
         )
         return {"output_id": output_id, "download_url": f"/api/download/{output_id}"}
@@ -155,23 +161,26 @@ async def mix_tracks(
 
 @app.post("/api/extend")
 async def extend_track(
-    file_id: str, 
-    duration: str = "30m",
+    request: ExtendRequest,
     api_key: str = Depends(get_api_key)
 ):
-    """한 트랙 무한 반복 확장"""
-    files = list(UPLOAD_DIR.glob(f"{file_id}.*"))
+    """트랙(오디오/비디오) 무한 반복 확장"""
+    files = list(UPLOAD_DIR.glob(f"{request.file_id}.*"))
     if not files:
         raise HTTPException(status_code=404, detail="File not found")
     path = str(files[0])
     
+    # 확장자 유지 (비디오인 경우 mp4로 고정하거나 원본 유지)
+    is_video = path.lower().endswith(('.mp4', '.mov', '.avi', '.mkv', '.webm'))
+    ext = ".mp4" if is_video else ".mp3"
+    
     output_id = str(uuid.uuid4())
-    output_filename = f"extended_{output_id}.mp3"
+    output_filename = f"extended_{output_id}{ext}"
     output_path = str(OUTPUT_DIR / output_filename)
     
     try:
         extender = MusicExtender()
-        extender.extend_track(path, output_path, duration)
+        extender.extend_track(path, output_path, request.duration)
         return {"output_id": output_id, "download_url": f"/api/download/{output_id}"}
         
     except Exception as e:
@@ -189,10 +198,14 @@ async def download_result(output_id: str):
         raise HTTPException(status_code=404, detail="File expired or not found")
         
     path = files[0]
+    ext = path.suffix
+    is_video = ext.lower() in ['.mp4', '.mov', '.avi']
+    media_type = "video/mp4" if is_video else "audio/mpeg"
+    
     return FileResponse(
         path, 
-        media_type="audio/mpeg", 
-        filename=f"dj_station_mix.mp3"
+        media_type=media_type, 
+        filename=f"dj_station_result{ext}"
     )
 
 if __name__ == "__main__":

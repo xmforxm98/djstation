@@ -6,13 +6,14 @@ Music Extender
 import numpy as np
 import librosa
 import soundfile as sf
-from typing import Optional
+import os
+import moviepy.editor as mp
 from audio_analyzer import AudioAnalyzer
 from advanced_mixer import AdvancedMixer
 
 
 class MusicExtender:
-    """음악 확장 클래스"""
+    """음악 및 비디오 확장 클래스"""
     
     def __init__(self):
         self.mixer = AdvancedMixer()
@@ -36,26 +37,28 @@ class MusicExtender:
                      target_duration_str: str, 
                      transition_bars: int = 16) -> str:
         """
-        트랙을 목표 시간까지 반복 확장
-        
-        Args:
-            input_path: 입력 파일 경로
-            output_path: 출력 파일 경로
-            target_duration_str: 목표 길이 (예: '30m')
-            transition_bars: 전환 길이 (바)
-            
-        Returns:
-            출력 파일 경로
+        트랙(오디오 또는 비디오)을 목표 시간까지 반복 확장
         """
+        is_video = input_path.lower().endswith(('.mp4', '.mov', '.avi', '.mkv', '.webm'))
+        video_temp_audio = "temp_video_audio.wav"
+        
+        # 비디오인 경우 오디오 추출
+        actual_input = input_path
+        if is_video:
+            print("🎬 Video detected. Extracting audio for processing...")
+            video = mp.VideoFileClip(input_path)
+            video.audio.write_audiofile(video_temp_audio, logger=None)
+            actual_input = video_temp_audio
+
         target_duration = self.parse_duration(target_duration_str)
         
         print(f"\n{'='*70}")
-        print(f"🔄 Music Extender: Extending to {target_duration_str}")
+        print(f"🔄 Media Extender: Extending to {target_duration_str}")
         print(f"{'='*70}\n")
         
         # 1. 분석
         print("📊 Analyzing track...")
-        analyzer = AudioAnalyzer(input_path)
+        analyzer = AudioAnalyzer(actual_input)
         analysis = analyzer.analyze_full()
         
         # 2. 오디오 로드
@@ -261,10 +264,32 @@ class MusicExtender:
         # Normalize
         full_mix = self.mixer.normalize_audio(full_mix)
         
-        # Save
-        sf.write(output_path, full_mix.T, sr)
-        print(f"💾 Saved to {output_path}")
+        # Save Audio
+        audio_output = output_path if not is_video else "temp_extended_audio.wav"
+        sf.write(audio_output, full_mix.T, sr)
+        print(f"💾 Saved audio to {audio_output}")
         
+        # 6. 비디오 처리 (비디오인 경우)
+        if is_video:
+            print("\n🎬 Looping video to match audio duration...")
+            audio_clip = mp.AudioFileClip(audio_output)
+            video_clip = mp.VideoFileClip(input_path)
+            
+            # 비디오를 오디오 길이에 맞춰 반복
+            num_video_loops = int(np.ceil(audio_clip.duration / video_clip.duration))
+            final_video = mp.concatenate_videoclips([video_clip] * num_video_loops)
+            final_video = final_video.set_duration(audio_clip.duration)
+            final_video = final_video.set_audio(audio_clip)
+            
+            print(f"📦 Writing final video: {output_path}")
+            final_video.write_videofile(output_path, codec="libx264", audio_codec="aac", logger=None)
+            
+            # Cleanup temp files
+            audio_clip.close()
+            video_clip.close()
+            if os.path.exists(video_temp_audio): os.path.unlink(video_temp_audio)
+            if os.path.exists("temp_extended_audio.wav"): os.path.unlink("temp_extended_audio.wav")
+            
         return output_path
 
 if __name__ == "__main__":
