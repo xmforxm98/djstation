@@ -170,9 +170,10 @@ async def extend_track(
         raise HTTPException(status_code=404, detail="File not found")
     path = str(files[0])
     
-    # 확장자 유지 (비디오인 경우 mp4로 고정하거나 원본 유지)
+    # 확장자 유지 (비디오/이미지인 경우 mp4로 고정, 오디오는 mp3)
     is_video = path.lower().endswith(('.mp4', '.mov', '.avi', '.mkv', '.webm'))
-    ext = ".mp4" if is_video else ".mp3"
+    is_image = path.lower().endswith(('.jpg', '.jpeg', '.png', '.webp', '.bmp'))
+    ext = ".mp4" if (is_video or is_image) else ".mp3"
     
     output_id = str(uuid.uuid4())
     output_filename = f"extended_{output_id}{ext}"

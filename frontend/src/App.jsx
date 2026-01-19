@@ -101,10 +101,14 @@ const DocsView = ({ onClose }) => {
 
 // --- Sky Theme Components ---
 
-const FileUploader = ({ onFileSelect, label, icon, acceptVideo }) => {
+const FileUploader = ({ onFileSelect, label, icon, acceptMedia }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: acceptVideo
-      ? { 'audio/*': ['.mp3', '.wav', '.flac', '.m4a'], 'video/*': ['.mp4', '.mov', '.avi'] }
+    accept: acceptMedia
+      ? {
+        'audio/*': ['.mp3', '.wav', '.flac', '.m4a'],
+        'video/*': ['.mp4', '.mov', '.avi'],
+        'image/*': ['.jpg', '.jpeg', '.png', '.webp']
+      }
       : { 'audio/*': ['.mp3', '.wav', '.flac', '.m4a'] },
     onDrop: (acceptedFiles) => {
       if (acceptedFiles.length > 0) {
@@ -128,7 +132,7 @@ const FileUploader = ({ onFileSelect, label, icon, acceptVideo }) => {
         </div>
         <p className="text-sm font-bold tracking-tight">{label}</p>
         <p className="text-xs text-slate-500 mt-1 opacity-70">
-          {isDragActive ? 'Drop it here' : (acceptVideo ? 'Audio or Video' : 'Audio Files')}
+          {isDragActive ? 'Drop it here' : (acceptMedia ? 'Audio, Video or Image' : 'Audio Files')}
         </p>
       </div>
     </div>
@@ -404,10 +408,10 @@ function App() {
                   <div className="space-y-4">
                     {!extenderSource ? (
                       <FileUploader
-                        label="Source Media (Audio/Video)"
+                        label="Source Media (Audio/Video/Image)"
                         onFileSelect={handleFileUpload}
                         icon={<Wand2 className="w-6 h-6 text-purple-600" />}
-                        acceptVideo={true}
+                        acceptMedia={true}
                       />
                     ) : (
                       <FloatingTrackCard
@@ -432,7 +436,10 @@ function App() {
                         ))}
                       </div>
                       <p className="text-xs text-slate-400 text-center px-4 leading-relaxed">
-                        The AI will loop your {isProcessing ? 'content' : (extenderSource?.file?.type.startsWith('video') ? 'video & audio' : 'audio')} seamlessly in <b>Lofi-girl style</b> for {loopDuration}.
+                        The AI will loop your {isProcessing ? 'content' : (
+                          extenderSource?.file?.type.startsWith('image') ? 'image as a background' :
+                            extenderSource?.file?.type.startsWith('video') ? 'video & audio' : 'audio'
+                        )} seamlessly in <b>Lofi-girl style</b> for {loopDuration}.
                       </p>
                     </div>
                   </div>
