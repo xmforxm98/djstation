@@ -306,8 +306,23 @@ class MusicExtender:
                 video_clip.close()
             
             elif is_image:
-                print("\n🖼️ Creating static video from image...")
-                final_video = mp.ImageClip(input_path).set_duration(audio_clip.duration)
+                print("\n🖼️ Creating animated 5s loop from image (Ken Burns style)...")
+                # 5초짜리 움직이는 영상을 만듬 (미세한 줌 효과)
+                base_duration = 5.0
+                image_clip = mp.ImageClip(input_path).set_duration(base_duration)
+                
+                # Ken Burns Effect: 1.0에서 1.1배로 천천히 확대
+                def zoom(t):
+                    return 1.0 + 0.1 * (t / base_duration)
+                
+                animated_clip = image_clip.params_setter(lambda clip: clip.resize(zoom))
+                
+                # 5초 영상을 전체 길이에 맞춰 반복
+                num_loops = int(np.ceil(audio_clip.duration / base_duration))
+                final_video = mp.concatenate_videoclips([animated_clip] * num_loops, method="compose")
+                final_video = final_video.set_duration(audio_clip.duration)
+                image_clip.close()
+                animated_clip.close()
             
             final_video = final_video.set_audio(audio_clip)
             
